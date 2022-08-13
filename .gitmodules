@@ -7,3 +7,12 @@
 [submodule "modules/lain"]
 	path = modules/lain
 	url = https://github.com/lcpz/lain
+[submodule "modules/layout-machi"]
+	path = modules/layout-machi
+	url = https://github.com/xinhaoyuan/layout-machi
+[submodule "modules/awesome-modalbind"]
+	path = modules/awesome-modalbind
+	url = https://github.com/crater2150/awesome-modalbind
+[submodule "modules/awesome-wm-widgets"]
+	path = modules/awesome-wm-widgets
+	url = https://github.com/streetturtle/awesome-wm-widgets
