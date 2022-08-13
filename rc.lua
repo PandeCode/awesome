@@ -11,6 +11,9 @@ beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 local machi = require("modules.layout-machi")
 beautiful.layout_machi = machi.get_icon()
 
+local bling = require("modules.bling")
+bling.module.flash_focus.enable()
+
 -- load key and mouse bindings
 require("bindings")
 
