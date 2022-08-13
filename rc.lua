@@ -8,6 +8,9 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 
+local machi = require("modules.layout-machi")
+beautiful.layout_machi = machi.get_icon()
+
 -- load key and mouse bindings
 require("bindings")
 
