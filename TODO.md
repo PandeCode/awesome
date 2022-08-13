@@ -1,0 +1,3 @@
+- Tag preview
+- Spotify support
+- Display CPU usage on titlebars
