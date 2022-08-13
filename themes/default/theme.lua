@@ -12,6 +12,9 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
+theme.flash_focus_start_opacity = 0.6 -- the starting opacity
+theme.flash_focus_step = 0.01         -- the step of animation
+
 theme.font          = "sans 8"
 
 theme.bg_normal     = "#222222"
