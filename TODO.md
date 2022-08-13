@@ -1,3 +1,5 @@
 - Tag preview
 - Spotify support
 - Display CPU usage on titlebars
+- https://awesomewm.org/apidoc/libraries/awful.prompt.html#awful.prompt.run:~:text=%22/history%22%2C%0A%7D-,highlighting,-%3A
+- https://awesomewm.org/doc/api/classes/awful.widget.layoutlist.html
