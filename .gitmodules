@@ -4,3 +4,6 @@
 [submodule "modules/rubato"]
 	path = modules/rubato
 	url = https://github.com/andOrlando/rubato
+[submodule "modules/lain"]
+	path = modules/lain
+	url = https://github.com/lcpz/lain
