@@ -15,6 +15,35 @@ local theme = {}
 theme.flash_focus_start_opacity = 0.6 -- the starting opacity
 theme.flash_focus_step = 0.01         -- the step of animation
 
+-- For tabbed only
+theme.tabbed_spawn_in_tab = false  -- whether a new client should spawn into the focused tabbing container
+
+-- For tabbar in general
+theme.tabbar_ontop  = false
+theme.tabbar_radius = 0                -- border radius of the tabbar
+theme.tabbar_style = "default"         -- style of the tabbar ("default", "boxes" or "modern")
+theme.tabbar_font = "Sans 11"          -- font of the tabbar
+theme.tabbar_size = 40                 -- size of the tabbar
+theme.tabbar_position = "top"          -- position of the tabbar
+theme.tabbar_bg_normal = "#000000"     -- background color of the focused client on the tabbar
+theme.tabbar_fg_normal = "#ffffff"     -- foreground color of the focused client on the tabbar
+theme.tabbar_bg_focus  = "#1A2026"     -- background color of unfocused clients on the tabbar
+theme.tabbar_fg_focus  = "#ff0000"     -- foreground color of unfocused clients on the tabbar
+theme.tabbar_bg_focus_inactive = nil   -- background color of the focused client on the tabbar when inactive
+theme.tabbar_fg_focus_inactive = nil   -- foreground color of the focused client on the tabbar when inactive
+theme.tabbar_bg_normal_inactive = nil  -- background color of unfocused clients on the tabbar when inactive
+theme.tabbar_fg_normal_inactive = nil  -- foreground color of unfocused clients on the tabbar when inactive
+theme.tabbar_disable = false           -- disable the tab bar entirely
+
+-- the following variables are currently only for the "modern" tabbar style
+theme.tabbar_color_close = "#f9929b" -- chnges the color of the close button
+theme.tabbar_color_min   = "#fbdf90" -- chnges the color of the minimize button
+theme.tabbar_color_float = "#ccaced" -- chnges the color of the float button
+
+theme.parent_filter_list   = {"firefox", "Gimp"} -- class names list of parents that should not be swallowed
+theme.child_filter_list    = { "Dragon" }        -- class names list that should not swallow their parents
+theme.swallowing_filter = true                   -- whether the filters above should be active
+
 theme.font          = "sans 8"
 
 theme.bg_normal     = "#222222"
@@ -136,6 +165,12 @@ rnotification.connect_signal('request::rules', function()
         properties = { bg = '#ff0000', fg = '#ffffff' }
     }
 end)
+
+theme.taglist_widget_template_margins_right = 1
+theme.taglist_widget_template_margins_left = 1
+theme.taglist_icon_role_margins = 1
+theme.taglist_index_role_margins = 1
+theme.taglist_spacing = 1
 
 return theme
 

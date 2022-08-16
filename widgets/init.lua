@@ -4,6 +4,8 @@ local awful = require("awful")
 local hotkeys_popup = require("awful.hotkeys_popup")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
+local gears = require("gears")
+local naughty = require("naughty")
 
 local apps = require("config.apps")
 local mod = require("bindings.mod")
@@ -24,7 +26,7 @@ _M.awesomemenu = {
 _M.mainmenu = awful.menu({
 	items = {
 		{ "awesome", _M.awesomemenu, beautiful.awesome_icon },
-		{ "open terminal", apps.terminal },
+		{ "open terminal", awesome.spawn(apps.terminal) },
 	},
 })
 
@@ -76,55 +78,99 @@ function _M.create_layoutbox(s)
 	})
 end
 
+require("config.tag_preview")
+
 function _M.create_taglist(s)
+	-- stylua: ignore
 	return awful.widget.taglist({
 		screen = s,
-		filter = awful.widget.taglist.filter.all,
+		filter =  awful.widget.taglist.filter.noempty,
+		style = {
+			shape = gears.shape.powerline,
+		},
+		layout = {
+			spacing = beautiful.taglist_spacing,
+			spacing_widget = {
+				color = beautiful.border_color_marked,
+				shape = gears.shape.powerline,
+				widget = wibox.widget.separator,
+			},
+			layout = wibox.layout.fixed.horizontal,
+		},
 		buttons = {
-			awful.button({
-				modifiers = {},
-				button = 1,
-				on_press = function(t)
-					t:view_only()
-				end,
-			}),
-			awful.button({
-				modifiers = { mod.super },
-				button = 1,
-				on_press = function(t)
-					if client.focus then
-						client.focus:move_to_tag(t)
+			awful.button({ modifiers = {}, button = 1, on_press = function(t) t:view_only() end, }),
+			awful.button({ modifiers = { mod.super }, button = 1, on_press = function(t) if client.focus then client.focus:move_to_tag(t) end end, }),
+			awful.button({ modifiers = {}, button = 3, on_press = awful.tag.viewtoggle, }),
+			awful.button({ modifiers = { mod.super }, button = 3, on_press = function(t) if client.focus then client.focus:toggle_tag(t) end end, }),
+			awful.button({ modifiers = {}, button = 4, on_press = function(t) awful.tag.viewprev(t.screen) end, }),
+			awful.button({ modifiers = {}, button = 5, on_press = function(t) awful.tag.viewnext(t.screen) end, }),
+		},
+		widget_template = {
+			{
+				{
+					{
+						{
+							{
+								id = "index_role",
+								widget = wibox.widget.textbox,
+							},
+							margins = beautiful.taglist_index_role_margins,
+							widget = wibox.container.margin,
+						},
+						bg = "#dddddd",
+						shape = gears.shape.circle,
+						widget = wibox.container.background,
+					},
+					{
+						{
+							id = "icon_role",
+							widget = wibox.widget.imagebox,
+						},
+						margins = beautiful.taglist_icon_role_margins,
+						widget = wibox.container.margin,
+					},
+					{
+						id = "text_role",
+						widget = wibox.widget.textbox,
+					},
+					layout = wibox.layout.fixed.horizontal,
+				},
+				left =beautiful.taglist_widget_template_margins_left,
+				right =beautiful.taglist_widget_template_margins_right,
+				widget = wibox.container.margin,
+			},
+			id = "background_role",
+			widget = wibox.container.background,
+			-- Add support for hover colors and an index label
+			create_callback = function(self, c3, index, objects) --luacheck: no unused args
+				self:get_children_by_id('index_role')[1].markup = '<b> '..index..' </b>'
+				self:connect_signal('mouse::enter', function()
+
+					-- BLING: Only show widget when there are clients in the tag
+					if #c3:clients() > 0 then
+						-- BLING: Update the widget with the new tag
+						awesome.emit_signal("bling::tag_preview::update", c3)
+						-- BLING: Show the widget
+						awesome.emit_signal("bling::tag_preview::visibility", s, true)
 					end
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 3,
-				on_press = awful.tag.viewtoggle,
-			}),
-			awful.button({
-				modifiers = { mod.super },
-				button = 3,
-				on_press = function(t)
-					if client.focus then
-						client.focus:toggle_tag(t)
+
+					if self.bg ~= '#ff0000' then
+						self.backup	 = self.bg
+						self.has_backup = true
 					end
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 4,
-				on_press = function(t)
-					awful.tag.viewprev(t.screen)
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 5,
-				on_press = function(t)
-					awful.tag.viewnext(t.screen)
-				end,
-			}),
+					self.bg = '#ff0000'
+				end)
+				self:connect_signal('mouse::leave', function()
+
+					-- BLING: Turn the widget off
+					awesome.emit_signal("bling::tag_preview::visibility", s, false)
+
+					if self.has_backup then self.bg = self.backup end
+				end)
+			end,
+			update_callback = function(self, c3, index, objects) --luacheck: no unused args
+				self:get_children_by_id("index_role")[1].markup = "<b> " .. c3.index .. " </b>"
+			end,
 		},
 	})
 end
