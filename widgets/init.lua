@@ -142,9 +142,9 @@ function _M.create_taglist(s)
 			id = "background_role",
 			widget = wibox.container.background,
 			-- Add support for hover colors and an index label
-			create_callback = function(self, c3, index, objects) --luacheck: no unused args
-				self:get_children_by_id('index_role')[1].markup = '<b> '..index..' </b>'
-				self:connect_signal('mouse::enter', function()
+			create_callback = function(self, c3, index, objects)
+				self:get_children_by_id("index_role")[1].markup = "<b>"..index.."</b>"
+				self:connect_signal("mouse::enter", function()
 
 					-- BLING: Only show widget when there are clients in the tag
 					if #c3:clients() > 0 then
@@ -154,11 +154,11 @@ function _M.create_taglist(s)
 						awesome.emit_signal("bling::tag_preview::visibility", s, true)
 					end
 
-					if self.bg ~= '#ff0000' then
+					if self.bg ~= beautiful.taglist_bg_focus then
 						self.backup	 = self.bg
 						self.has_backup = true
 					end
-					self.bg = '#ff0000'
+					self.bg = beautiful.taglist_bg_focus
 				end)
 				self:connect_signal('mouse::leave', function()
 
@@ -168,8 +168,8 @@ function _M.create_taglist(s)
 					if self.has_backup then self.bg = self.backup end
 				end)
 			end,
-			update_callback = function(self, c3, index, objects) --luacheck: no unused args
-				self:get_children_by_id("index_role")[1].markup = "<b> " .. c3.index .. " </b>"
+			update_callback = function(self, c3, index, objects)
+				self:get_children_by_id("index_role")[1].markup = "<b>" .. c3.index .. "</b>"
 			end,
 		},
 	})
