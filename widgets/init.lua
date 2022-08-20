@@ -5,7 +5,6 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
-local naughty = require("naughty")
 
 local apps = require("config.apps")
 local mod = require("bindings.mod")
@@ -24,10 +23,10 @@ _M.awesomemenu = {
 }
 
 _M.mainmenu = awful.menu({
-	items = {
-		{ "awesome", _M.awesomemenu, beautiful.awesome_icon },
-		{ "open terminal", awesome.spawn(apps.terminal) },
-	},
+	-- items = {
+	--     { "awesome", _M.awesomemenu, beautiful.awesome_icon },
+	--     { "open terminal", awesome.spawn(apps.terminal) },
+	-- },
 })
 
 _M.launcher = awful.widget.launcher({

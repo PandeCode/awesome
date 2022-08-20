@@ -12,39 +12,7 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.flash_focus_start_opacity = 0.6 -- the starting opacity
-theme.flash_focus_step = 0.01         -- the step of animation
-
--- For tabbed only
-theme.tabbed_spawn_in_tab = false  -- whether a new client should spawn into the focused tabbing container
-
--- For tabbar in general
-theme.tabbar_ontop  = false
-theme.tabbar_radius = 0                -- border radius of the tabbar
-theme.tabbar_style = "default"         -- style of the tabbar ("default", "boxes" or "modern")
-theme.tabbar_font = "Sans 11"          -- font of the tabbar
-theme.tabbar_size = 40                 -- size of the tabbar
-theme.tabbar_position = "top"          -- position of the tabbar
-theme.tabbar_bg_normal = "#000000"     -- background color of the focused client on the tabbar
-theme.tabbar_fg_normal = "#ffffff"     -- foreground color of the focused client on the tabbar
-theme.tabbar_bg_focus  = "#1A2026"     -- background color of unfocused clients on the tabbar
-theme.tabbar_fg_focus  = "#ff0000"     -- foreground color of unfocused clients on the tabbar
-theme.tabbar_bg_focus_inactive = nil   -- background color of the focused client on the tabbar when inactive
-theme.tabbar_fg_focus_inactive = nil   -- foreground color of the focused client on the tabbar when inactive
-theme.tabbar_bg_normal_inactive = nil  -- background color of unfocused clients on the tabbar when inactive
-theme.tabbar_fg_normal_inactive = nil  -- foreground color of unfocused clients on the tabbar when inactive
-theme.tabbar_disable = false           -- disable the tab bar entirely
-
--- the following variables are currently only for the "modern" tabbar style
-theme.tabbar_color_close = "#f9929b" -- chnges the color of the close button
-theme.tabbar_color_min   = "#fbdf90" -- chnges the color of the minimize button
-theme.tabbar_color_float = "#ccaced" -- chnges the color of the float button
-
-theme.parent_filter_list   = {"firefox", "Gimp"} -- class names list of parents that should not be swallowed
-theme.child_filter_list    = { "Dragon" }        -- class names list that should not swallow their parents
-theme.swallowing_filter = true                   -- whether the filters above should be active
-
-theme.font          = "sans 8"
+theme.font          = "Fira Code Nerd Font 11"
 
 theme.bg_normal     = "#222222"
 theme.bg_focus      = "#535d6c"
@@ -171,6 +139,51 @@ theme.taglist_widget_template_margins_left = 1
 theme.taglist_icon_role_margins = 1
 theme.taglist_index_role_margins = 1
 theme.taglist_spacing = 1
+
+theme.flash_focus_start_opacity = 0.6 -- the starting opacity
+theme.flash_focus_step = 0.01         -- the step of animation
+
+-- For tabbed only
+theme.tabbed_spawn_in_tab = false  -- whether a new client should spawn into the focused tabbing container
+
+-- For tabbar in general
+theme.tabbar_ontop  = false
+theme.tabbar_radius = 0                -- border radius of the tabbar
+theme.tabbar_style = "default"         -- style of the tabbar ("default", "boxes" or "modern")
+theme.tabbar_font =  theme.font         -- font of the tabbar
+theme.tabbar_size = 40                 -- size of the tabbar
+theme.tabbar_position = "top"          -- position of the tabbar
+theme.tabbar_bg_normal = "#000000"     -- background color of the focused client on the tabbar
+theme.tabbar_fg_normal = "#ffffff"     -- foreground color of the focused client on the tabbar
+theme.tabbar_bg_focus  = "#1A2026"     -- background color of unfocused clients on the tabbar
+theme.tabbar_fg_focus  = "#ff0000"     -- foreground color of unfocused clients on the tabbar
+theme.tabbar_bg_focus_inactive = nil   -- background color of the focused client on the tabbar when inactive
+theme.tabbar_fg_focus_inactive = nil   -- foreground color of the focused client on the tabbar when inactive
+theme.tabbar_bg_normal_inactive = nil  -- background color of unfocused clients on the tabbar when inactive
+theme.tabbar_fg_normal_inactive = nil  -- foreground color of unfocused clients on the tabbar when inactive
+theme.tabbar_disable = false           -- disable the tab bar entirely
+
+-- the following variables are currently only for the "modern" tabbar style
+theme.tabbar_color_close = "#f9929b" -- chnges the color of the close button
+theme.tabbar_color_min   = "#fbdf90" -- chnges the color of the minimize button
+theme.tabbar_color_float = "#ccaced" -- chnges the color of the float button
+
+theme.parent_filter_list   = {"firefox", "Gimp"} -- class names list of parents that should not be swallowed
+theme.child_filter_list    = { "Dragon" }        -- class names list that should not swallow their parents
+theme.swallowing_filter = true                   -- whether the filters above should be active
+
+theme.modalbind_show_default_options = true
+theme.modalbind_show_options = true
+theme.modalbind_location = "top_right"
+theme.modalbind_opacity = 0.7
+theme.modalbind_x_offset = -10
+theme.modalbind_y_offset = 10
+
+theme.modalbind_font = theme.font
+theme.modalbind_fg = theme.fg_normal
+theme.modalbind_bg = theme.bg_normal
+theme.modalbind_border = theme.border_color_normal
+theme.modalbind_border_width = 1
 
 return theme
 
