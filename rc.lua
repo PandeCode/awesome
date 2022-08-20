@@ -3,7 +3,7 @@ local __RED = "\033[91m"
 local __ENDC = "\033[0m"
 
 local gears = require("gears")
-gears.debug.print_error(__RED .. "BEGIN ERR LOG" .. __ENDC .. "\n")
+gears.debug.print_error(__RED .. "--------------------------------BEGIN ERR LOG--------------------------------------------" .. __ENDC .. "\n")
 
 -- load luarocks if installed
 pcall(require, "luarocks.loader")
@@ -11,7 +11,7 @@ pcall(require, "luarocks.loader")
 -- load theme
 local beautiful = require("beautiful")
 
-beautiful.init(gears.filesystem.get_configuration_dir().. "default/theme.lua")
+beautiful.init(gears.filesystem.get_configuration_dir().. "themes/default/theme.lua")
 -- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 
 local machi = require("modules.layout-machi")
@@ -29,4 +29,4 @@ require("rules")
 -- load signals
 require("signals")
 
-gears.debug.print_error(__RED .. "BEGIN ERR LOG" .. __ENDC .. "\n")
+gears.debug.print_error(__RED .. "--------------------------------END ERR LOG--------------------------------------------" .. __ENDC .. "\n")

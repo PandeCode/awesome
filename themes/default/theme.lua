@@ -8,7 +8,7 @@ local rnotification = require("ruled.notification")
 local dpi = xresources.apply_dpi
 
 local gfs = require("gears.filesystem")
-local themes_path = gfs.get_themes_dir()
+local themes_path = gfs.get_themes_dir() .. "themes"
 
 local theme = {}
 
@@ -105,7 +105,9 @@ theme.titlebar_maximized_button_focus_inactive  = themes_path.."default/titlebar
 theme.titlebar_maximized_button_normal_active = themes_path.."default/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = themes_path.."default/titlebar/maximized_focus_active.png"
 
-theme.wallpaper = themes_path.."default/background.png"
+-- theme.wallpaper = themes_path.."default/background.png"
+theme.wallpaper_dir =  "/Pictures/Wallpapers"
+theme.wallpaper = gfs.get_random_file_from_dir(theme.wallpaper_dir)
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = themes_path.."default/layouts/fairhw.png"
@@ -192,6 +194,7 @@ theme.modalbind_fg = theme.fg_normal
 theme.modalbind_bg = theme.bg_normal
 theme.modalbind_border = theme.border_color_normal
 theme.modalbind_border_width = 1
+theme.modalbind_border_radius = 10
 
 return theme
 
