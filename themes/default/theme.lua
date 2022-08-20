@@ -25,6 +25,14 @@ theme.fg_focus      = "#ffffff"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
+theme.green = "#00ff00"
+theme.yellow = "#ffff00"
+theme.red = "#ff0000"
+
+theme.okay_color = theme.green
+theme.warning_color = theme.yellow
+theme.error_color =theme.red
+
 theme.useless_gap         = dpi(0)
 theme.border_width        = dpi(1)
 theme.border_color_normal = "#000000"
