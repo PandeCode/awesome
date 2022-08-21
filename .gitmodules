@@ -16,3 +16,6 @@
 [submodule "modules/awesome-wm-widgets"]
 	path = modules/awesome-wm-widgets
 	url = https://github.com/streetturtle/awesome-wm-widgets
+[submodule "modules/awesome-buttons"]
+	path = modules/awesome-buttons
+	url = https://github.com/streetturtle/awesome-buttons
