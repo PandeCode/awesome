@@ -29,4 +29,6 @@ require("rules")
 -- load signals
 require("signals")
 
+require("widgets.custom.action_center")
+
 gears.debug.print_error(__RED .. "--------------------------------END ERR LOG--------------------------------------------" .. __ENDC .. "\n")
