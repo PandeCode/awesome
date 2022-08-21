@@ -85,7 +85,7 @@ function _M.create_taglist(s)
 		screen = s,
 		filter =  awful.widget.taglist.filter.noempty,
 		style = {
-			shape = gears.shape.powerline,
+			shape = gears.shape.rectangle,
 		},
 		layout = {
 			spacing = beautiful.taglist_spacing,

@@ -10,9 +10,13 @@ pcall(require, "luarocks.loader")
 
 -- load theme
 local beautiful = require("beautiful")
-
 beautiful.init(gears.filesystem.get_configuration_dir().. "themes/default/theme.lua")
--- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+
+-- load signals
+require("signals")
+
+-- load rules
+require("rules")
 
 local machi = require("modules.layout-machi")
 beautiful.layout_machi = machi.get_icon()
@@ -23,12 +27,6 @@ bling.module.flash_focus.enable()
 -- load key and mouse bindings
 require("bindings")
 
--- load rules
-require("rules")
-
--- load signals
-require("signals")
-
-require("widgets.custom.action_center")
+-- local _action_center = require("widgets.custom.action_center")()
 
 gears.debug.print_error(__RED .. "--------------------------------END ERR LOG--------------------------------------------" .. __ENDC .. "\n")

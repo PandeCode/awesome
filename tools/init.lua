@@ -4,6 +4,16 @@ local naughty = require("naughty")
 
 local _M = {}
 
+function _M.exec(prog)
+	return io.popen(prog):read("*all")
+end
+
+function _M.func_exec(prog)
+	return function()
+		return _M.exec(prog)
+	end
+end
+
 function _M.truncate(text, length)
 	return (text:len() > length and length > 0) and text:sub(0, length - 3) .. "..." or text
 end
@@ -159,7 +169,7 @@ function _M.lines_from(file)
 end
 
 function _M.is_process_running(ps)
-	return io.popen("pidof " .. ps):read("*all") ~= ""
+	return _M.exec("pidof " .. ps) ~= ""
 end
 
 -- Average CPU
@@ -214,23 +224,44 @@ function _M.get_swap()
 end
 
 function _M.is_plugged(sys_file)
-	return _M.read_file(sys_file or "/sys/class/power_supply/ACAD/online") == "1"
+	if sys_file == nil then
+		if _M.file_exists("/sys/class/power_supply/ACAD/online") then
+			sys_file = "/sys/class/power_supply/ACAD/online"
+		elseif _M.file_exists("/sys/class/power_supply/AC/online") then
+			sys_file = "/sys/class/power_supply/AC/online"
+		else
+			gears.debug.print_error("No power supply found")
+			return false
+		end
+	end
+
+	return _M.read_file(sys_file) == "1"
 end
 
 function _M.get_battery(sys_file)
-	return tonumber(_M.read_file(sys_file or "/sys/class/power_supply/BAT1/capacity"))
+	if sys_file == nil then
+		if _M.file_exists("/sys/class/power_supply/BAT0/capacity") then
+			sys_file = "/sys/class/power_supply/BAT0/capacity"
+		elseif _M.file_exists("/sys/class/power_supply/BAT1/capacity") then
+			sys_file = "/sys/class/power_supply/BAT1/capacity"
+		else
+			gears.debug.print_error("No battery found")
+			return 0
+		end
+	end
+	return tonumber(_M.read_file(sys_file))
 end
 
 function _M.get_volume()
-	return io.popen([[amixer sget Master | grep -Po 'Left: Playback.*\[\K[\d]+(?=%\])']]):read("*all")
+	return _M.exec([[amixer sget Master | grep -Po 'Left: Playback.*\[\K[\d]+(?=%\])']])
 end
 
 function _M.get_ping()
-	return io.popen([[SB=3 ~/dotfiles/scripts/ping]]):read("*all")
+	return _M.exec([[SB=3 ~/dotfiles/scripts/ping]])
 end
 
 function _M.get_storage()
-	return io.popen([[df /dev/sda6 | awk 'FNR==2 { printf ($3*100)/($3+$4) }']]):read("*all")
+	return _M.exec([[df /dev/sda6 | awk 'FNR==2 { printf ($3*100)/($3+$4) }']])
 end
 
 function _M.sleep(n) -- seconds

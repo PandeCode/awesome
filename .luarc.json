@@ -19,5 +19,7 @@
 		"/usr/share/awesome/lib/?/init.lua",
 		"~/.config/awesome/?.lua",
 		"~/.config/awesome/?/init.lua"
+		"~/.config/awesome/modules/?/init.lua"
+		"~/.config/awesome/modules/?/?.lua"
 	]
 }

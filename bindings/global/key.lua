@@ -103,13 +103,6 @@ local spawn_map = {
 	{ "s", function() awful.spawn("dex /usr/share/applications/spotify-adblock.desktop", "spotify", true) end, "spotify", },
 }
 
-local toggle_map = {
-	{ "t", awful.client.floating.toggle, "floating" }, { "f", function() client.focus.fullscreen = not client.focus.fullscreen end, "Fullscreen", },
-	{ "i", function() awful.titlebar.toggle(client.focus) end, "titlebars", },
-	{ "b", function() mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible end, "bar", },
-	{ "l", function() awful.spawn("betterlockscreen -l", true) end, "lock screen", },
-}
-
 local info_map = {
 	{ "b", function() awful.spawn("~/dotfiles/scripts/xmobar/battery.sh 1") end, "battery", },
 	{ "c", function() awful.spawn("~/dotfiles/scripts/xmobar/cpu.sh 1")     end, "cpu", },
@@ -160,6 +153,25 @@ local decrease_number_of_master_clients = function() awful.tag.incnmaster(-1, ni
 local incresae_master_width_factor      = function() awful.tag.incmwfact(0.05) end
 local decrease_master_width_factor      = function() awful.tag.incmwfact(-0.05) end
 
+local toggle_fullscreen = function() client.focus.fullscreen = not client.focus.fullscreen end
+local toggle_titlebars = function() awful.titlebar.toggle(client.focus) end
+local toggle_bar =function() mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible end
+local toggle_lock_screen =function() awful.spawn("betterlockscreen -l", true) end
+
+local modalbind_toggle = function()
+	modalbind.grab({
+		name = "Toggle",
+		stay_in_mode = true,
+		keymap = {
+			{ "l", awful.client.floating.toggle, "floating" },
+			{ "f", toggle_fullscreen, "Fullscreen" },
+			{ "i", toggle_titlebars, "titlebars" },
+			{ "b", toggle_bar, "bar" },
+			{ "l", toggle_lock_screen, "lock screen" },
+			{ "t", modalbind_term_scratch, "Term scratch" },
+		},
+	})
+end
 
 -- @type awful.key[]
 local keybindings = {
@@ -175,7 +187,7 @@ local keybindings = {
 	awful.key({ mod.super             }, "r",      run_prompt,                       nil, { description = "run prompt",                            group =  "awesome"}),
 
 	awful.key({ mod.super             }, "s",      modalbind_spawn,                  nil, { description = "Spawn",                                 group =  "launcher"}),
-	awful.key({ mod.super             }, "t",      modalbind_term_scratch,           nil, { description = "term_scratch commands",                 group =  "term_scratch"}),
+	awful.key({ mod.super             }, "t",      modalbind_toggle,           nil, { description = "term_scratch commands",                 group =  "term_scratch"}),
 
 	awful.key({ mod.super             }, "w",      modalbind_window_swallowing,      nil, { description = "window_swallowing commands",            group =  "window_swallowing"}),
 
