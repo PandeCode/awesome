@@ -35,9 +35,11 @@ local generics       = require("widgets.generics")
 ---@field border_radius          number         default=10
 ---@field border_width           number         default=1
 ---@field border_width_panel     number         default=2
----@field border_color           Color          default=beautiful.border_color_active
+---@field border_color           Color          default=beautiful.border_color_normal
+---@field border_color_panel     Color          default=beautiful.border_color_active
 ---@field main_margin            number         default=10
----@field user_icon_size         Path           default=50
+---@field user_icon_size         number         default=50
+---@field user_icon              Path           default=~/.user_icon
 ---@field height                 number         default=500
 ---@field width                  number         default=500
 ---@field spacing                number         default=10
@@ -60,8 +62,10 @@ function generate_action_center(args)
 	local _border_radius          = (args or {}).border_radius          or 10
 	local _border_width           = (args or {}).border_width           or 1
 	local _border_width_panel     = (args or {}).border_width_panel     or 2
-	local _border_color           = (args or {}).border_color           or beautiful.border_color_active
+	local _border_color           = (args or {}).border_color           or beautiful.border_color_normal
+	local _border_color_panel     = (args or {}).border_color_panel     or beautiful.border_color_active
 	local _main_margin            = (args or {}).main_margin            or 10
+	local _user_icon              = (args or {}).user_icon              or os.getenv("HOME") .. "/.user_icon"
 	local _user_icon_size         = (args or {}).user_icon_size         or 50
 	local _height                 = (args or {}).height                 or 500
 	local _width                  = (args or {}).width                  or 500
@@ -181,13 +185,13 @@ function generate_action_center(args)
 	})
 
 	local user = require("widgets.custom.action_center.user")({
-		user_icon = os.getenv("HOME") .. "/Pictures/Wallpapers/Sakura_Nene_CPP.jpg",
+		user_icon = _user_icon,
 		user_icon_size = _user_icon_size,
 		background_color = _background_color_panel,
 		border_color = _border_color_panel,
 		border = false,
 	})
-	local info = require("widgets.custom.action_center.info")({ 
+	local info = require("widgets.custom.action_center.info")({
 		background_color = _background_color_panel,
 		border_color = _border_color_panel,
 		border_width = _border_width_panel,

@@ -15,6 +15,8 @@ local theme                                     = {}
 
 theme.font                                      = "Comic Shanns"
 
+theme.user_icon                                 = os.getenv("HOME") .. "/.user_icon"
+
 theme.bg_normal                                 = "#222222"
 theme.bg_focus                                  = "#535d6c"
 theme.bg_urgent                                 = "#ff0000"

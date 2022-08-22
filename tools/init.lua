@@ -4,21 +4,69 @@ local naughty = require("naughty")
 
 local _M = {}
 
+---Execute a command
+---@param prog string
+---@return string
 function _M.exec(prog)
 	return io.popen(prog):read("*all")
 end
 
+---Return a function that will execute a command when called
+---@param prog string
+---@return function
 function _M.func_exec(prog)
 	return function()
 		return _M.exec(prog)
 	end
 end
 
+---Expand paths like '~' and environment vairables like '$HOME'
+---@param path string
+---@return string
+function _M.expand_path(path)
+	return _M.exec("echo " .. path)
+end
+
+---Create a file
+---@param filepath string
+function _M.create_file(filepath)
+	filepath = _M.expand_path(filepath)
+	local dir = _M.exec("dirname " .. filepath)
+	_M.exec("mkdir -p " .. dir)
+	_M.exec("touch " .. filepath)
+end
+
+---Write To File
+---@param filepath string
+---@param str any
+function _M.write_to_file(filepath, str)
+	filepath = _M.expand_path(filepath)
+	if not _M.file_exists(filepath) then
+		_M.create_file(filepath)
+	end
+
+	local file, err = io.open(filepath, "w")
+	if file then
+		file:write(_M.any_to_string(str))
+		file:close()
+	else
+		local msg = "Error opening file: " .. err
+		gears.debug.print_error(msg)
+		_M.notify(msg)
+	end
+end
+
+---Truncate String
+---@param text string
+---@param length integer
+---@return string
 function _M.truncate(text, length)
 	return (text:len() > length and length > 0) and text:sub(0, length - 3) .. "..." or text
 end
 
 -- Converts seconds to “time ago” represenation, like ‘1 hour ago’
+---@param seconds integer
+---@return string
 function _M.to_time_ago(seconds)
 	local days = seconds / 86400
 	if days > 1 then
@@ -40,10 +88,10 @@ function _M.to_time_ago(seconds)
 end
 
 ---A helper function to print a table's contents.
----@param tbl table @The table to print.
----@param depth number @The depth of sub-tables to traverse through and print.
----@param n number @Do NOT manually set this. This controls formatting through recursion.
-function _M.table_to_string(tbl, depth, n)
+---@param tbl any @The table to print.
+---@param depth? integer @The depth of sub-tables to traverse through and print.
+---@param n? integer @Do NOT manually set this. This controls formatting through recursion.
+function _M.any_to_string(tbl, depth, n)
 	if type(tbl) ~= "table" then
 		return tostring(tbl)
 	end
@@ -67,7 +115,7 @@ function _M.table_to_string(tbl, depth, n)
 			if type(value) == "table" then
 				if next(value) then
 					final = final .. string.rep(" ", n) .. key .. " = {" .. "\n"
-					final = final .. _M.table_to_string(value, depth - 1, n + 4) .. "\n"
+					final = final .. _M.any_to_string(value, depth - 1, n + 4) .. "\n"
 					final = final .. string.rep(" ", n) .. "}," .. "\n"
 				else
 					final = final .. string.rep(" ", n) .. key .. " = {}," .. "\n"
@@ -91,9 +139,11 @@ function _M.table_to_string(tbl, depth, n)
 	return final
 end
 
+---Awesome Notification
+---@param str string
 function _M.notify(str)
 	naughty.notify({
-		text = _M.table_to_string(str),
+		text = _M.any_to_string(str),
 		shape = gears.shape.rounded_rect,
 	})
 end
@@ -223,6 +273,9 @@ function _M.get_swap()
 	return percent
 end
 
+---Check if plugged in
+---@param sys_file? string
+---@return boolean
 function _M.is_plugged(sys_file)
 	if sys_file == nil then
 		if _M.file_exists("/sys/class/power_supply/ACAD/online") then
@@ -238,6 +291,9 @@ function _M.is_plugged(sys_file)
 	return _M.read_file(sys_file) == "1"
 end
 
+---get battery percentage
+---@param sys_file? string /sys/class/power_supply/BAT{?}/capacity
+---@return integer
 function _M.get_battery(sys_file)
 	if sys_file == nil then
 		if _M.file_exists("/sys/class/power_supply/BAT0/capacity") then
@@ -249,11 +305,11 @@ function _M.get_battery(sys_file)
 			return 0
 		end
 	end
-	return tonumber(_M.read_file(sys_file))
+	return tonumber(_M.read_file(sys_file)) or 0
 end
 
 function _M.get_volume()
-	return _M.exec([[amixer sget Master | grep -Po 'Left: Playback.*\[\K[\d]+(?=%\])']])
+	return _M.exec([[pactl get-sink-volume @DEFAULT_SINK@ | grep -Po '\\/\\s\\K\\d+(?=%\\s\\/)' | head -n r]])
 end
 
 function _M.get_ping()
@@ -264,12 +320,30 @@ function _M.get_storage()
 	return _M.exec([[df /dev/sda6 | awk 'FNR==2 { printf ($3*100)/($3+$4) }']])
 end
 
+---Warning This runs on the main thread
+---@param n integer
 function _M.sleep(n) -- seconds
 	local t0 = os.clock()
 	while os.clock() - t0 <= n do
 	end
 end
 
+---Call a function after a delay async
+---@param callback function
+---@param seconds number
+function _M.delayed_run(callback, seconds)
+	gears.timer({
+		timeout = seconds,
+		autostart = true,
+		single_shot = true,
+		callback = callback,
+	})
+end
+
+---Add padding to string
+---@param str string
+---@param desired_len integer
+---@return string
 function _M.add_padding_if_not_len(str, desired_len)
 	if #str < desired_len then
 		return string.rep(" ", desired_len - #str) .. str
