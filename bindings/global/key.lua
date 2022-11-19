@@ -1,6 +1,7 @@
 -- stylua: ignore start
 local awful = require("awful")
 local menubar = require("menubar")
+local tools = require("tools")
 
 local apps = require("config.apps")
 local mod = require("bindings.mod")
@@ -82,12 +83,13 @@ local media_map = {
 }
 
 local spawn_map = {
-	{ "b", function() awful.spawn("~/dotfiles/PERSONAL_PATH/chrome") end, "chrome", },
-	{ "c", function() awful.spawn("~/dotfiles/PERSONAL_PATH/click4ever", true) end, "click4ever", },
-	{ "h", function() awful.spawn("hakuneko-desktop", true) end, "hakuneko-desktop", },
-	{ "p", function() awful.spawn("pavucontrol", true) end, "pavucontrol", },
-	{ "r", function() awful.spawn("vokoscreenNG", true) end, "vokoscreenNG", },
-	{ "s", function() awful.spawn("dex /usr/share/applications/spotify-adblock.desktop", "spotify", true) end, "spotify", },
+	{ "b", tools.spawn_func(apps.browser,                  false, apps.browser_ps_name), "browser", },
+	{ "i", tools.spawn_func(apps.browser .. "--incognito", false, apps.browser_ps_name), "browser", },
+	{ "c", tools.spawn_func(apps.click4ever,               true), "click4ever",          },
+	{ "h", tools.spawn_func(apps.hakuneko,                 true), "hakuneko-desktop",    },
+	{ "p", tools.spawn_func(apps.pavucontrol,              true), "pavucontrol",         },
+	{ "r", tools.spawn_func(apps.vokoscreenNG,             true), "vokoscreenNG",        },
+	{ "s", tools.spawn_func(apps.spotify,                  true,  "spotify"),            "spotify", },
 }
 
 local info_map = {
@@ -120,14 +122,43 @@ local machi_map = {
 	{ "e", machi.default_editor.start_interactive, "edit the current layout if it is a machi layout" },
 	{ "s", function() machi.switcher.start(client.focus) end, "switch between windows for a machi layout", },
 }
-local function modalbind_machi() modalbind.grab({ keymap = machi_map, name = "Machi", stay_in_mode = false }) end
-local layout_map = {
-	{ "machi", modalbind_machi, "Layout Machi Command"},
-	{ "tabbed", modalbind_tabbed, "Tabbed Commands"},
-}
-for _, value in pairs(layouts) do
-	table.insert(layout_map, { value.name, function() awful.layout.set(value) end, "Switch to " .. tostring(value.name) })
+local function modalbind_machi() 
+	tools.exec("xdotool key Escape")
+	modalbind.grab({ keymap = machi_map, name = "Machi", stay_in_mode = false })
 end
+
+local layout_map = {
+	{ "m", modalbind_machi, "Layout Machi Command"},
+	{ "t", modalbind_tabbed, "Tabbed Commands"},
+}
+
+(function()
+	local used_letters = { "m", "t" }
+	for _, layout in pairs(layouts) do
+		local letter_index = 1
+		local selected_letter = layout.name:sub(letter_index, letter_index)
+
+		while tools.table_has_value(used_letters, selected_letter) do
+			if letter_index < #(layout.name) then
+				letter_index = letter_index + 1
+				selected_letter = layout.name:sub(letter_index, letter_index)
+			else
+				tools.notify("fail")
+				return
+			end
+		end
+		table.insert(used_letters, selected_letter)
+
+		table.insert(layout_map, {
+			selected_letter,
+			function()
+				awful.layout.set(layout)
+			end,
+			"Switch to " .. tostring(layout.name),
+		})
+	end
+end)()
+
 local function modalbind_layout() modalbind.grab({ keymap = layout_map,            name = "Layout",            stay_in_mode = true }) end
 
 

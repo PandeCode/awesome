@@ -5,6 +5,11 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 local gears = require("gears")
+local generics = require("widgets.generics")
+-- local tools = require("tools")
+
+local xresources = require("beautiful.xresources")
+-- local dpi = xresources.apply_dpi
 
 local apps = require("config.apps")
 local mod = require("bindings.mod")
@@ -23,10 +28,10 @@ _M.awesomemenu = {
 }
 
 _M.mainmenu = awful.menu({
-	-- items = {
-	--     { "awesome", _M.awesomemenu, beautiful.awesome_icon },
-	--     { "open terminal", awesome.spawn(apps.terminal) },
-	-- },
+	items = {
+		{ "awesome", _M.awesomemenu, beautiful.awesome_icon },
+		{ "open terminal", apps.terminal },
+	},
 })
 
 _M.launcher = awful.widget.launcher({
@@ -34,47 +39,126 @@ _M.launcher = awful.widget.launcher({
 	menu = _M.mainmenu,
 })
 
-_M.keyboardlayout = awful.widget.keyboardlayout()
-_M.textclock = wibox.widget.textclock()
-
 function _M.create_promptbox()
 	return awful.widget.prompt()
 end
 
-function _M.create_layoutbox(s)
-	return awful.widget.layoutbox({
-		screen = s,
-		buttons = {
-			awful.button({
-				modifiers = {},
-				button = 1,
-				on_press = function()
-					awful.layout.inc(1)
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 3,
-				on_press = function()
-					awful.layout.inc(-1)
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 4,
-				on_press = function()
-					awful.layout.inc(-1)
-				end,
-			}),
-			awful.button({
-				modifiers = {},
-				button = 5,
-				on_press = function()
-					awful.layout.inc(1)
-				end,
-			}),
-		},
+
+---@class GenerateLayoutListArgs
+---@field background_color       Color          default="#222831"
+---@field background_color_panel Color          default="#393E46"
+---@field foreground_color       Color          default="#EEEEEE"
+---@field alternate              Color          default="#00ADB5"
+---@field border_radius          number         default=10
+---@field border_width           number         default=1
+---@field border_width_panel     number         default=2
+---@field border_color           Color          default=beautiful.border_color_normal
+---@field border_color_panel     Color          default=beautiful.border_color_active
+---@field main_margin            number         default=10
+---@field user_icon_size         number         default=50
+---@field user_icon              Path           default=~/.user_icon
+---@field height                 number         default=500
+---@field width                  number         default=500
+---@field spacing                number         default=10
+---@field position               AwfulPlacement default="top_right"
+---@field x_offset               number         default=-40
+---@field y_offset               number         default=40
+---@field animations             boolean        default=true
+
+---@alias Layoutlist table awful.widget.layoutlist
+
+---Create a layoutlist
+---@param args GenerateLayoutListArgs
+---@return Layoutlist
+function _M.create_layoutlist(args)
+	if args == nil then
+		args = {}
+	end
+
+	-- stylua: ignore start
+	local _background_color       = args.background_color       or "#222831"
+	local _border_radius          = args.border_radius          or 10
+	local _border_width           = args.border_width           or 1
+	local _border_color           = args.border_color           or beautiful.border_color_normal
+	local _main_margin            = args.main_margin            or 10
+	local _height                 = args.height                 or #awful.layout.layouts * 25
+	local _width                  = args.width                  or 150
+	local _position               = args.position               or "top_right"
+	local _x_offset               = args.x_offset               or -1
+	local _y_offset               = args.y_offset               or 25
+	local _animations             = args.animations             or true
+	-- stylua: ignore end
+
+	local layoutlist = wibox({
+		ontop = true,
+		visible = false,
+
+		height = _height,
+		width = _width,
+
+		-- shape = generics.generate_rounded_rect(_border_radius),
+		shape = gears.shape.infobubble,
+		shape_border_width = _border_width,
+		shape_border_color = _border_color,
+
+		placement = awful.placement.top_left,
+		offset = { x = _x_offset, y = _y_offset },
+		bg = _background_color,
+
+		widget = generics.add_padding (
+			awful.widget.layoutlist({
+				screen = 1,
+				base_layout = wibox.layout.flex.vertical,
+				shape = generics.generate_rounded_rect(_border_radius),
+			})
+		)
 	})
+
+	awful.placement.align(layoutlist, {
+		position = _position,
+		offset = { x = _x_offset, y = _y_offset },
+	})
+
+	return generics.generate_controllers(layoutlist)
+	-- return layoutlist
+end
+---@diagnostic disable
+---next-line: unused-local
+function _M.create_layoutbox(s)
+	local layoutbox = awful.widget.layoutbox({ screen = s })
+
+	local function set_last_layout()
+		if s.LAST_LAUOUT ~= nil then
+			_tmp = awful.layout.get(s)
+			awful.layout.set(s.LAST_LAUOUT)
+			s.LAST_LAUOUT = _tmp
+		end
+	end
+	local function show_layoutlist()
+		if s.LAYOUT_LIST == nil then
+			s.LAYOUT_LIST = _M.create_layoutlist()
+			s.LAYOUT_LIST.show()
+		else
+			s.LAYOUT_LIST.toggle()
+		end
+	end
+	local function set_next_layout()
+		s.LAST_LAUOUT = awful.layout.get(awful.screen.focused())
+		awful.layout.inc(1)
+	end
+	local function set_prev_layout()
+		s.LAST_LAUOUT = awful.layout.get(awful.screen.focused())
+		awful.layout.inc(-1)
+	end
+
+	layoutbox.buttons = {
+		awful.button({}, 1, set_last_layout),
+		awful.button({}, 3, show_layoutlist),
+		awful.button({}, 4, set_next_layout),
+		awful.button({}, 5, set_prev_layout),
+	}
+
+	return layoutbox
 end
 
 require("config.tag_preview")
@@ -227,13 +311,7 @@ function _M.create_wibox(s)
 			-- middle widgets
 			s.tasklist,
 			-- right widgets
-			{
-				layout = wibox.layout.fixed.horizontal,
-				_M.keyboardlayout,
-				wibox.widget.systray(),
-				_M.textclock,
-				s.layoutbox,
-			},
+			require("widgets.custom.indicators")().indicators,
 		},
 	})
 end

@@ -3,13 +3,14 @@
 ---------------------------
 -- stylua: ignore start
 
+
 local theme_assets                              = require("beautiful.theme_assets")
 local xresources                                = require("beautiful.xresources")
 local rnotification                             = require("ruled.notification")
 local dpi                                       = xresources.apply_dpi
 
 local gfs                                       = require("gears.filesystem")
-local themes_path                               = gfs.get_themes_dir() .. "themes"
+local themes_path                               = gfs.get_configuration_dir() .. "themes/"
 
 local theme                                     = {}
 
@@ -17,10 +18,11 @@ theme.font                                      = "Comic Shanns"
 
 theme.user_icon                                 = os.getenv("HOME") .. "/.user_icon"
 
-theme.bg_normal                                 = "#222222"
-theme.bg_focus                                  = "#535d6c"
-theme.bg_urgent                                 = "#ff0000"
-theme.bg_minimize                               = "#444444"
+
+theme.bg_normal                                 = "#0F111A"
+theme.bg_focus                                  = "#717CB4"
+theme.bg_urgent                                 = "##f07178"
+theme.bg_minimize                               = "#181A1F"
 theme.bg_systray                                = theme.bg_normal
 
 theme.fg_normal                                 = "#aaaaaa"
@@ -38,9 +40,12 @@ theme.error_color                               = theme.red
 
 theme.useless_gap                               = dpi(0)
 theme.border_width                              = dpi(1)
+theme.border_radius                             = 10
 theme.border_color_normal                       = "#000000"
 theme.border_color_active                       = "#535d6c"
 theme.border_color_marked                       = "#91231c"
+
+theme.alternate_color = "#00ADB5"
 
 -- There are other variable sets
 -- overriding the default one when
@@ -109,8 +114,8 @@ theme.titlebar_maximized_button_normal_active   = themes_path.."default/titlebar
 theme.titlebar_maximized_button_focus_active    = themes_path.."default/titlebar/maximized_focus_active.png"
 
 -- theme.wallpaper = themes_path.."default/background.png"
-theme.wallpaper_dir                             = os.getenv("HOME") .. "/Pictures/Wallpapers"
-theme.wallpaper                                 = gfs.get_random_file_from_dir(theme.wallpaper_dir)
+theme.wallpaper_dir                             = os.getenv("HOME") .. "/Pictures/Wallpapers/"
+theme.wallpaper                                 = theme.wallpaper_dir .. gfs.get_random_file_from_dir(theme.wallpaper_dir)
 
 -- You can use your own layout icons like this:
 theme.layout_fairh                              = themes_path.."default/layouts/fairhw.png"

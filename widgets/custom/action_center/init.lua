@@ -23,9 +23,9 @@ local generics       = require("widgets.generics")
 
 ---@class GenerateActionCenterReturn
 ---@field action_center        WiboxWidget
----@field hide_action_center   function
----@field show_action_center   function
----@field toggle_action_center function
+---@field hide                 function
+---@field show                 function
+---@field toggle               function
 
 ---@class GenerateActionCenterArgs
 ---@field background_color       Color          default="#222831"
@@ -40,6 +40,7 @@ local generics       = require("widgets.generics")
 ---@field main_margin            number         default=10
 ---@field user_icon_size         number         default=50
 ---@field user_icon              Path           default=~/.user_icon
+---@field opacity                number         default=1 range(0..1)
 ---@field height                 number         default=500
 ---@field width                  number         default=500
 ---@field spacing                number         default=10
@@ -53,110 +54,52 @@ local generics       = require("widgets.generics")
 ---@return GenerateActionCenterReturn
 function generate_action_center(args)
 	local _M = {}
+	if args == nil then
+		args = {}
+	end
 
 	-- stylua: ignore start
-	local _background_color       = (args or {}).background_color       or "#222831"
-	local _background_color_panel = (args or {}).background_color_panel or "#393E46"
-	local _foreground_color       = (args or {}).foreground_color       or "#EEEEEE"
-	local _alternate              = (args or {}).alternate              or "#00ADB5"
-	local _border_radius          = (args or {}).border_radius          or 10
-	local _border_width           = (args or {}).border_width           or 1
-	local _border_width_panel     = (args or {}).border_width_panel     or 2
-	local _border_color           = (args or {}).border_color           or beautiful.border_color_normal
-	local _border_color_panel     = (args or {}).border_color_panel     or beautiful.border_color_active
-	local _main_margin            = (args or {}).main_margin            or 10
-	local _user_icon              = (args or {}).user_icon              or os.getenv("HOME") .. "/.user_icon"
-	local _user_icon_size         = (args or {}).user_icon_size         or 50
-	local _height                 = (args or {}).height                 or 500
-	local _width                  = (args or {}).width                  or 500
-	local _spacing                = (args or {}).spacing                or 10
-	local _position               = (args or {}).position               or "top_right"
-	local _x_offset               = (args or {}).x_offset               or -40
-	local _y_offset               = (args or {}).y_offset               or 40
-	local _animations             = (args or {}).animations             or true
+	local _background_color       = args.background_color       or beautiful.bg_normal
+	local _background_color_panel = args.background_color_panel or beautiful.bg_focused
+	local _foreground_color       = args.foreground_color       or beautiful.fg_normal
+	local _alternate              = args.alternate              or beautiful.alternate_color
+	local _border_radius          = args.border_radius          or beautiful.border_width
+	local _border_width           = args.border_width           or beautiful.border_width
+	local _border_width_panel     = args.border_width_panel     or beautiful.border_width
+	local _border_color           = args.border_color           or beautiful.border_color_normal
+	local _border_color_panel     = args.border_color_panel     or beautiful.border_color_active
+	local _main_margin            = args.main_margin            or 10
+	local _user_icon              = args.user_icon              or os.getenv("HOME") .. "/.user_icon"
+	local _user_icon_size         = args.user_icon_size         or 70
+	local _opacity                = args.opacity                or 1
+	local _height                 = args.height                 or 500
+	local _width                  = args.width                  or 500
+	local _spacing                = args.spacing                or 10
+	local _position               = args.position               or "top_right"
+	local _x_offset               = args.x_offset               or -40
+	local _y_offset               = args.y_offset               or 40
+	local _animations             = args.animations             or true
 	-- stylua: ignore end
 
-	function _M.set_width(width)
-		if width == 0 then
-			_M.action_center.width = 1
-		else
-			_M.action_center.width = width
-		end
-	end
-	function _M.set_height(height)
-		if height == 0 then
-			_M.action_center.height = 1
-		else
-			_M.action_center.height = height
-		end
-	end
-	function _M.show_action_center()
-		if _M.action_center.visible then
-			return
-		end
-		_M.action_center.visible = true
+	_M.action_center = awful.popup({
+		ontop = true,
+		visible = false,
 
-		if _animations then
-			local timed_width = rubato.timed({
-				intro = 0.1,
-				duration = 0.5,
-				easing = rubato.quadratic,
-				pos = 0,
-				subscribed = _M.set_width,
-			})
-			local timed_height = rubato.timed({
-				intro = 0.1,
-				duration = 0.5,
-				easing = rubato.quadratic,
-				pos = 0,
-				subscribed = _M.set_height,
-			})
-			timed_height.target = _height
-			timed_width.target = _width
-		end
-	end
+		opacity = _opacity,
+		height = _height,
+		width = _width,
 
-	function _M.hide_action_center()
-		if not _M.action_center.visible then
-			return
-		end
+		shape = generics.generate_rounded_rect(_border_radius),
+		shape_border_width = _border_width,
+		shape_border_color = _border_color,
 
-		if _animations then
-			local timed_width = rubato.timed({
-				intro = 0.1,
-				duration = 0.5,
-				easing = rubato.quadratic,
-				pos = _width,
-				subscribed = _M.set_width,
-			})
-			local timed_height = rubato.timed({
-				intro = 0.1,
-				duration = 0.5,
-				easing = rubato.quadratic,
-				pos = _height,
-				subscribed = _M.set_height,
-			})
-			timed_height.target = 1
-			timed_width.target = 1
+		placement = awful.placement.top_left,
+		offset = { x = -100, y = 100 },
+		bg = _background_color,
 
-			gears.timer({
-				timeout = 0.6,
-				autostart = true,
-				single_shot = true,
-				callback = function() _M.action_center.visible = false end,
-			})
-			return
-		end
-		_M.action_center.visible = false
-	end
+		widget = wibox.widget({})
+	})
 
-	function _M.toggle_action_center()
-		if _M.action_center.visible then
-			_M.hide_action_center()
-		else
-			_M.show_action_center()
-		end
-	end
 
 	local body = wibox.widget({
 		forced_height = _height * 0.9,
@@ -168,6 +111,11 @@ function generate_action_center(args)
 		min_rows_size = 3,
 	})
 
+	local controllers = generics.generate_controllers(_M.action_center)
+	_M.show           = controllers.show
+	_M.hide           = controllers.hide
+	_M.toggle         = controllers.toggle
+
 	local head = wibox.widget({
 		height = _height * 0.05,
 		bg = _alternate,
@@ -176,7 +124,7 @@ function generate_action_center(args)
 		wibox.widget({}),
 		generics.generic_widget({ text = "Action Center", foreground_color = _foreground_color, border = false }),
 		awesomebuttons.with_icon({
-			onclick = _M.toggle_action_center,
+			onclick = _M.toggle,
 			type = "outline",
 			shape = "circle",
 			icon = "x",
@@ -204,27 +152,14 @@ function generate_action_center(args)
 	body:add_widget_at(stats, 2, 1, 1, 3)
 	body:add_widget_at(power, 3, 1, 1, 3)
 
-	_M.action_center = wibox({
-		ontop = true,
-		visible = false,
-
-		height = _height,
-		width = _width,
-
-		shape = generics.generate_rounded_rect(_border_radius),
-		shape_border_width = _border_width,
-		shape_border_color = _border_color,
-
-		placement = awful.placement.top_left,
-		offset = { x = -100, y = 100 },
-		bg = _background_color,
-
-		widget = generics.add_padding({
+	_M.action_center:setup({
+		layout = wibox.layout.manual,
+		(generics.add_padding({
 			layout = wibox.layout.fixed.vertical,
 			spacing = _main_margin,
 			head,
 			body,
-		}),
+		})),
 	})
 
 	awful.placement.align(_M.action_center, {

@@ -1,12 +1,14 @@
-local _M = {}
-local wibox = require("wibox")
-local gears = require("gears")
+local _M        = {}
+local wibox     = require("wibox")
+local gears     = require("gears")
+local beautiful = require("beautiful")
+local rubato    = require("modules.rubato")
 
 -- stylua: ignore start
-_M._default_foreground_color           = "#EEEEEE"
-_M._default_background_color           = "#222831"
-_M._default_background_color_secondary = "#393E46"
-_M._default_border_color               = "#00ADB5"
+_M._default_foreground_color           = beautiful.fg_normal
+_M._default_background_color           = beautiful.bg_normal
+_M._default_background_color_secondary = beautiful.bg_focus
+_M._default_border_color               = beautiful.border_color_normal
 _M._default_border_width               = 1
 _M._default_border_radius              = 10
 _M._default_margin                     = 10
@@ -99,7 +101,7 @@ function _M.generic_widget(args)
 	end
 
 	if args.update_interval ~= nil then
-		timer = gears.timer({ timeout = args.update_interval, call_now = true, callback = true_callback })
+		timer = gears.timer({ timeout = args.update_interval, autostart = true, call_now = true, callback = true_callback })
 	end
 
 	local widget = wibox.widget({
@@ -116,6 +118,120 @@ function _M.generic_widget(args)
 	})
 
 	return widget, timer
+end
+
+---Generate Functions for showing hiding and toggling a widget with shrink animations
+---@param widget WiboxWidget
+---@param animations? boolean default=true
+---@return table {hide, show,}
+function _M.generate_controllers(widget, animations)
+	animations = animations or true
+	width = widget.width
+	height = widget.height
+
+	local _N = {}
+
+	function _N.set_width(width)
+		if width == 0 then
+			widget.width = 1
+		else
+			widget.width = width
+		end
+	end
+	function _N.set_height(height)
+		if height == 0 then
+			widget.height = 1
+		else
+			widget.height = height
+		end
+	end
+	function _N.show()
+		if widget.visible then
+			return
+		end
+		widget.visible = true
+
+		if animations then
+			local timed_width = rubato.timed({
+				intro = 0.1,
+				duration = 0.5,
+				easing = rubato.quadratic,
+				pos = 0,
+				subscribed = _N.set_width,
+			})
+			local timed_height = rubato.timed({
+				intro = 0.1,
+				duration = 0.5,
+				easing = rubato.quadratic,
+				pos = 0,
+				subscribed = _N.set_height,
+			})
+			timed_height.target = height
+			timed_width.target = width
+		end
+	end
+
+	function _N.hide()
+		if not widget.visible then
+			return
+		end
+
+		if animations then
+			local timed_width = rubato.timed({
+				intro = 0.1,
+				duration = 0.5,
+				easing = rubato.quadratic,
+				pos = width,
+				subscribed = _N.set_width,
+			})
+			local timed_height = rubato.timed({
+				intro = 0.1,
+				duration = 0.5,
+				easing = rubato.quadratic,
+				pos = height,
+				subscribed = _N.set_height,
+			})
+			timed_height.target = 1
+			timed_width.target = 1
+
+			gears.timer({
+				timeout = 0.6,
+				autostart = true,
+				single_shot = true,
+				callback = function() widget.visible = false end,
+			})
+			return
+		end
+		widget.visible = false
+	end
+
+	function _N.toggle()
+		if widget.visible then
+			_N.hide()
+		else
+			_N.show()
+		end
+	end
+
+	return _N
+end
+
+function _M.wrap_margin(widget)
+	return {
+		{
+			widget,
+			top = 4,
+			bottom = 4,
+			left = 4,
+			right = 4,
+			widget = wibox.container.margin
+		},
+		bg = beautiful.bg_normal;
+		shape_border_width = 1,
+		shape_border_color = beautiful.border_color_normal,
+		shape = _M.generate_rounded_rect(20),
+		widget = wibox.container.background;
+	}
 end
 
 return _M
