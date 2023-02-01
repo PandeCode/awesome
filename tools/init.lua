@@ -225,7 +225,7 @@ end
 
 -- Average CPU
 function _M.get_cpu()
-	return tonumber(_M.exec([[ ~/dotfiles/scripts/sysstat/cpu.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)' ]])) or 404
+	return tonumber(_M.exec([[ $DOTFILES/scripts/sysstat/cpu.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)' ]])) or 404
 end
 
 function _M.read_file(filename)
@@ -241,7 +241,7 @@ function _M.read_file(filename)
 end
 
 function _M.get_ram()
-	return tonumber(_M.exec([[~/dotfiles/scripts/sysstat/mem.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)']])) or 404
+	return tonumber(_M.exec([[$DOTFILES/scripts/sysstat/mem.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)']])) or 404
 	-- local lines = _M.lines_from("/proc/meminfo")
 	--
 	-- local total = tonumber(lines[1]:match("[%d]+"))
@@ -252,7 +252,7 @@ function _M.get_ram()
 end
 
 function _M.get_swap()
-	return tonumber(_M.exec([[~/dotfiles/scripts/sysstat/swap.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)']])) or 404
+	return tonumber(_M.exec([[$DOTFILES/scripts/sysstat/swap.sh | grep -Po '\[fg=.*]\K.*(?=%#\[)']])) or 404
 	-- local lines = _M.lines_from("/proc/meminfo")
     --
 	-- local total = tonumber(lines[15]:match("[%d]+"))
@@ -302,7 +302,7 @@ function _M.get_volume()
 end
 
 function _M.get_ping()
-	return tonumber(_M.exec("SB=3 ~/dotfiles/scripts/ping"))
+	return tonumber(_M.exec("SB=3 $DOTFILES/scripts/ping"))
 end
 
 function _M.get_storage(drive)

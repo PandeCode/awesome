@@ -67,19 +67,19 @@ local window_swallowing_map = {
 }
 
 local wallpaper_map = {
-	{ "r", function() awful.spawn("~/dotfiles/PERSONAL_PATH/randbg") end, "Random Wallpaper", },
-	{ "p", function() awful.spawn("~/dotfiles/PERSONAL_PATH/prevbg") end, "Previous Wallpaper", },
-	{ "n", function() awful.spawn("~/dotfiles/PERSONAL_PATH/nextbg") end, "Next Wallpaper", },
-	{ "l", function() awful.spawn("~/dotfiles/PERSONAL_PATH/lastbg") end, "Last Wallpaper", },
+	{ "r", function() awful.spawn("$DOTFILES/PERSONAL_PATH/randbg") end, "Random Wallpaper", },
+	{ "p", function() awful.spawn("$DOTFILES/PERSONAL_PATH/prevbg") end, "Previous Wallpaper", },
+	{ "n", function() awful.spawn("$DOTFILES/PERSONAL_PATH/nextbg") end, "Next Wallpaper", },
+	{ "l", function() awful.spawn("$DOTFILES/PERSONAL_PATH/lastbg") end, "Last Wallpaper", },
 }
 
 local media_map = {
-	{ "i", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh") end, "Info", },
-	{ "separator", "Playback" }, { "p", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh play") end, "Play", },
-	{ "P", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh pause") end, "Pause", },
-	{ " ", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh play-pause") end, "Play-Pause", },
-	{ "n", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh next") end, "Next", },
-	{ "N", function() awful.spawn("~/dotfiles/scripts/dwm/media.sh previous") end, "Prev", },
+	{ "i", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh") end, "Info", },
+	{ "separator", "Playback" }, { "p", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh play") end, "Play", },
+	{ "P", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh pause") end, "Pause", },
+	{ " ", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh play-pause") end, "Play-Pause", },
+	{ "n", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh next") end, "Next", },
+	{ "N", function() awful.spawn("$DOTFILES/scripts/dwm/media.sh previous") end, "Prev", },
 }
 
 local spawn_map = {
@@ -93,10 +93,10 @@ local spawn_map = {
 }
 
 local info_map = {
-	{ "b", function() awful.spawn("~/dotfiles/scripts/xmobar/battery.sh 1") end, "battery", },
-	{ "c", function() awful.spawn("~/dotfiles/scripts/xmobar/cpu.sh 1")     end, "cpu", },
-	{ "m", function() awful.spawn("~/dotfiles/scripts/xmobar/mem.sh 1")     end, "mem", },
-	{ "p", function() awful.spawn("~/dotfiles/scripts/xmobar/ping.sh 1")    end, "ping", },
+	{ "b", function() awful.spawn("$DOTFILES/scripts/xmobar/battery.sh 1") end, "battery", },
+	{ "c", function() awful.spawn("$DOTFILES/scripts/xmobar/cpu.sh 1")     end, "cpu", },
+	{ "m", function() awful.spawn("$DOTFILES/scripts/xmobar/mem.sh 1")     end, "mem", },
+	{ "p", function() awful.spawn("$DOTFILES/scripts/xmobar/ping.sh 1")    end, "ping", },
 }
 
 local function client_focus_next() awful.client.focus.byidx(1) end
